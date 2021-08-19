@@ -4,7 +4,6 @@ import com.example.musicstoredemo.config.HeaderConfig;
 import com.example.musicstoredemo.model.Accessory;
 import com.example.musicstoredemo.model.Guitar;
 import com.example.musicstoredemo.service.MusicStoreService;
-import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +42,12 @@ public class MusicStoreController {
         return musicStoreService.getAccessoryById(id);
     }
 
+    @PostMapping("/revert")
+    public void revertCatalog(@RequestHeader(value = ACCESS_HEADER) String accessHeader) throws IllegalAccessException {
+        validateHeader(accessHeader);
+        musicStoreService.revertCatalog();
+    }
+
     @PostMapping("/guitar")
     public void addGuitar(@RequestBody Guitar guitar,
                           @RequestHeader(value = ACCESS_HEADER) String accessHeader) throws IllegalAccessException {
@@ -62,4 +67,5 @@ public class MusicStoreController {
             throw new IllegalAccessException("Access violation");
         }
     }
+
 }

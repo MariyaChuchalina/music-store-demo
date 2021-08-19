@@ -10,6 +10,6 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "access")
 public class HeaderConfig {
 
-    @Value("${access-header}")
+    @Value("${header}")
     private String accessHeader;
 }

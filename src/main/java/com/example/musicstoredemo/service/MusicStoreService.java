@@ -2,13 +2,13 @@ package com.example.musicstoredemo.service;
 
 import com.example.musicstoredemo.exception.ItemNotFoundException;
 import com.example.musicstoredemo.model.Accessory;
+import com.example.musicstoredemo.model.Caretaker;
 import com.example.musicstoredemo.model.Catalog;
 import com.example.musicstoredemo.model.Guitar;
 import com.example.musicstoredemo.repository.AccessoryRepository;
 import com.example.musicstoredemo.repository.GuitarRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -25,10 +25,13 @@ public class MusicStoreService {
     private AccessoryRepository accessoryRepository;
 
     private Catalog catalog;
+    private Caretaker caretaker;
 
     @PostConstruct
     private void setUp() {
         catalog = Catalog.getInstance();
+        caretaker = new Caretaker();
+        populateCatalog();
     }
 
     public List<Guitar> getGuitarCatalog() {
@@ -65,10 +68,19 @@ public class MusicStoreService {
         }
     }
 
-    @Scheduled(fixedDelayString = "${catalog.refresh-catalog-rate}")
+    public void revertCatalog() {
+        caretaker.revert(catalog);
+    }
+
     private void refreshCatalog() {
-        log.info("Refreshing catalog...");
+        log.info("Saving current version and refreshing catalog...");
+        caretaker.save(catalog);
+        populateCatalog();
+    }
+
+    private void populateCatalog() {
         catalog.setGuitarList(guitarRepository.findAll());
         catalog.setAccessoryList(accessoryRepository.findAll());
     }
+
 }
