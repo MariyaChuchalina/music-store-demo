@@ -28,7 +28,7 @@ public class MusicStoreService {
 
     @PostConstruct
     private void setUp() {
-        catalog = new Catalog();
+        catalog = Catalog.getInstance();
     }
 
     public List<Guitar> getGuitarCatalog() {

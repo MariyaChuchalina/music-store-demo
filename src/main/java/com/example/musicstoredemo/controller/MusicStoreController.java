@@ -15,6 +15,8 @@ import java.util.List;
 @RequestMapping("/catalog")
 public class MusicStoreController {
 
+    private static final String ACCESS_HEADER = "modify-access";
+
     @Autowired
     private MusicStoreService musicStoreService;
 
@@ -43,14 +45,14 @@ public class MusicStoreController {
 
     @PostMapping("/guitar")
     public void addGuitar(@RequestBody Guitar guitar,
-                          @RequestHeader String accessHeader) throws IllegalAccessException {
+                          @RequestHeader(value = ACCESS_HEADER) String accessHeader) throws IllegalAccessException {
         validateHeader(accessHeader);
         musicStoreService.addGuitar(guitar);
     }
 
     @PostMapping("/accessory")
     public void addAccessory(@RequestBody Accessory accessory,
-                             @RequestHeader String accessHeader) throws IllegalAccessException {
+                             @RequestHeader(value = ACCESS_HEADER) String accessHeader) throws IllegalAccessException {
         validateHeader(accessHeader);
         musicStoreService.addAccessory(accessory);
     }

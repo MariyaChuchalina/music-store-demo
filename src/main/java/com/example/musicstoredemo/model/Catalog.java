@@ -1,16 +1,31 @@
 package com.example.musicstoredemo.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class Catalog {
 
+    private static Catalog catalog;
+
+    @Getter
+    @Setter
     private List<Guitar> guitarList;
+    @Getter
+    @Setter
     private List<Accessory> accessoryList;
+
+    private Catalog(){
+
+    }
+
+    public static Catalog getInstance(){
+        if(catalog == null){
+            catalog = new Catalog();
+        }
+
+        return catalog;
+    }
+
 }
