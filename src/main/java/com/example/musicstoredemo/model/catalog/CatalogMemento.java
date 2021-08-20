@@ -1,5 +1,7 @@
-package com.example.musicstoredemo.model;
+package com.example.musicstoredemo.model.catalog;
 
+import com.example.musicstoredemo.model.Accessory;
+import com.example.musicstoredemo.model.Guitar;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

@@ -3,9 +3,16 @@ package com.example.musicstoredemo.controller;
 import com.example.musicstoredemo.config.HeaderConfig;
 import com.example.musicstoredemo.model.Accessory;
 import com.example.musicstoredemo.model.Guitar;
+import com.example.musicstoredemo.model.price.Currency;
 import com.example.musicstoredemo.service.MusicStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
@@ -23,8 +30,8 @@ public class MusicStoreController {
     private HeaderConfig headerConfig;
 
     @GetMapping("/guitars")
-    public List<Guitar> getGuitarCatalog() {
-        return musicStoreService.getGuitarCatalog();
+    public List<Guitar> getGuitarCatalog(@RequestParam(value = "currency", defaultValue = "euro") Currency currency) {
+        return musicStoreService.getGuitarCatalog(currency);
     }
 
     @GetMapping("/accessories")

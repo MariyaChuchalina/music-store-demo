@@ -1,4 +1,4 @@
-package com.example.musicstoredemo.model;
+package com.example.musicstoredemo.model.catalog;
 
 import java.util.Stack;
 

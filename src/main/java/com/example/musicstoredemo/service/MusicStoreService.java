@@ -2,9 +2,13 @@ package com.example.musicstoredemo.service;
 
 import com.example.musicstoredemo.exception.ItemNotFoundException;
 import com.example.musicstoredemo.model.Accessory;
-import com.example.musicstoredemo.model.Caretaker;
-import com.example.musicstoredemo.model.Catalog;
 import com.example.musicstoredemo.model.Guitar;
+import com.example.musicstoredemo.model.catalog.Caretaker;
+import com.example.musicstoredemo.model.catalog.Catalog;
+import com.example.musicstoredemo.model.price.Currency;
+import com.example.musicstoredemo.model.price.Price;
+import com.example.musicstoredemo.model.price.PriceAdapter;
+import com.example.musicstoredemo.model.price.PriceInEuros;
 import com.example.musicstoredemo.repository.AccessoryRepository;
 import com.example.musicstoredemo.repository.GuitarRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -27,6 +32,9 @@ public class MusicStoreService {
     private Catalog catalog;
     private Caretaker caretaker;
 
+    private Price priceAdapter;
+    private PriceInEuros priceInEuros;
+
     @PostConstruct
     private void setUp() {
         catalog = Catalog.getInstance();
@@ -34,8 +42,9 @@ public class MusicStoreService {
         populateCatalog();
     }
 
-    public List<Guitar> getGuitarCatalog() {
-        return catalog.getGuitarList();
+    public List<Guitar> getGuitarCatalog(Currency currency) {
+        return currency == Currency.euro ? catalog.getGuitarList()
+                                         : convertPrices(currency);
     }
 
     public List<Accessory> getAccessoriesCatalog() {
@@ -70,6 +79,26 @@ public class MusicStoreService {
 
     public void revertCatalog() {
         caretaker.revert(catalog);
+    }
+
+    private List<Guitar> convertPrices(Currency currency){
+        List<Guitar> guitarsWithUpdatedPrices = new ArrayList<Guitar>();
+
+        if(!catalog.getGuitarList().isEmpty()) {
+            catalog.getGuitarList().forEach(g -> {
+                priceInEuros = new PriceInEuros(g.getPrice());
+                priceAdapter = new PriceAdapter(priceInEuros);
+                guitarsWithUpdatedPrices.add(new Guitar(g.getId(),
+                                                        g.getBrand(),
+                                                        g.getType(),
+                                                        g.getModel(),
+                                                        currency == Currency.dollar
+                                                                ? priceAdapter.getPriceInDollars()
+                                                                : priceAdapter.getPriceInPounds()));
+            });
+        }
+
+        return guitarsWithUpdatedPrices;
     }
 
     private void refreshCatalog() {
