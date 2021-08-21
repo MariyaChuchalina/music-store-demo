@@ -10,9 +10,9 @@ public enum UserRole {
 
     public static UserRole parse(String type) {
         return Arrays.stream(UserRole.values())
-                .filter(t -> t.name().equalsIgnoreCase(type))
-                .findFirst()
-                .orElse(null);
+                     .filter(t -> t.name().equalsIgnoreCase(type))
+                     .findFirst()
+                     .orElse(null);
     }
 
 }

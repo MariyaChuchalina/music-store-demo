@@ -10,9 +10,9 @@ public enum Currency {
 
     public static Currency parse(String type) {
         return Arrays.stream(Currency.values())
-                .filter(t -> t.name().equalsIgnoreCase(type))
-                .findFirst()
-                .orElse(null);
+                     .filter(t -> t.name().equalsIgnoreCase(type))
+                     .findFirst()
+                     .orElse(null);
     }
 
 }

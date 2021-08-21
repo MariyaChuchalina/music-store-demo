@@ -1,6 +1,7 @@
 package com.example.musicstoredemo.exception.handler;
 
 import com.example.musicstoredemo.exception.AccessDeniedException;
+import com.example.musicstoredemo.exception.InvalidInputException;
 import com.example.musicstoredemo.exception.ItemNotFoundException;
 import com.example.musicstoredemo.exception.UserNotFoundException;
 import com.example.musicstoredemo.model.error.ErrorResponse;
@@ -42,6 +43,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         log.error("Access denied", accessDeniedException);
         return buildErrorResponse(accessDeniedException, HttpStatus.FORBIDDEN, request.getDescription(false).split(DELIMITER)[1]);
+    }
+
+    @ExceptionHandler(InvalidInputException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Object> handleInvalidInputException(InvalidInputException invalidInputException, WebRequest request) {
+
+        log.error("Invalid input", invalidInputException);
+        return buildErrorResponse(invalidInputException, HttpStatus.BAD_REQUEST, request.getDescription(false).split(DELIMITER)[1]);
     }
 
     @ExceptionHandler(Exception.class)

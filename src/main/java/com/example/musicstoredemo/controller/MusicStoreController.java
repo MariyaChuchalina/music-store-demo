@@ -7,6 +7,7 @@ import com.example.musicstoredemo.service.MusicStoreService;
 import com.example.musicstoredemo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -31,16 +32,36 @@ public class MusicStoreController {
 
     @GetMapping("/guitars")
     public List<Guitar> getGuitarCatalog(@RequestParam(value = "currency", defaultValue = "euro") String currency,
+                                         @RequestParam(value = "sort", defaultValue = "none") String sort,
                                          @RequestHeader(value = ACCESS_HEADER) String accessHeader) {
         userService.validateAccess(accessHeader, Endpoint.GET_GUITAR_CATALOGUE);
-        return musicStoreService.getGuitarCatalog(currency);
+        return musicStoreService.getGuitarCatalog(currency, sort);
     }
 
     @GetMapping("/accessories")
     public List<Accessory> getAccessoriesCatalog(@RequestParam(value = "currency", defaultValue = "euro") String currency,
+                                                 @RequestParam(value = "sort", defaultValue = "none") String sort,
                                                  @RequestHeader(value = ACCESS_HEADER) String accessHeader) {
         userService.validateAccess(accessHeader, Endpoint.GET_ACCESSORIES_CATALOGUE);
-        return musicStoreService.getAccessoriesCatalog(currency);
+        return musicStoreService.getAccessoriesCatalog(currency, sort);
+    }
+
+    @GetMapping("/guitars/{brand}")
+    public List<Guitar> getGuitarCatalogByBrand(@PathVariable String brand,
+                                                @RequestParam(value = "currency", defaultValue = "euro") String currency,
+                                                @RequestParam(value = "sort", defaultValue = "none") String sort,
+                                                @RequestHeader(value = ACCESS_HEADER) String accessHeader) {
+        userService.validateAccess(accessHeader, Endpoint.GET_GUITAR_CATALOGUE_BY_BRAND);
+        return musicStoreService.getGuitarCatalogByBrand(brand, currency, sort);
+    }
+
+    @GetMapping("/accessories/{brand}")
+    public List<Accessory> getAccessoriesCatalogByBrand(@PathVariable String brand,
+                                                        @RequestParam(value = "currency", defaultValue = "euro") String currency,
+                                                        @RequestParam(value = "sort", defaultValue = "none") String sort,
+                                                        @RequestHeader(value = ACCESS_HEADER) String accessHeader) {
+        userService.validateAccess(accessHeader, Endpoint.GET_ACCESSORIES_CATALOGUE_BY_BRAND);
+        return musicStoreService.getAccessoriesCatalogByBrand(brand, currency, sort);
     }
 
     @GetMapping("/guitar")

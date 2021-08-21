@@ -11,7 +11,10 @@ CREATE TABLE guitars (
 INSERT INTO guitars (brand, type, model, price) VALUES
   ('Gibson', 'acoustic', 'J-45', 2479.00),
   ('Fender', 'electric-acoustic', 'T-Bucket', 250.00),
-  ('Schecter', 'electric', 'Apocalypse V1', 1100.99);
+  ('Gibson', 'electric', 'Les Paul Custom', 6299.00),
+  ('Taylor', 'acoustic', 'GT Urban Ash', 1349.00),
+  ('Schecter', 'electric', 'Apocalypse V1', 1100.99),
+  ('Gibson', 'electric', 'Les Paul Junior Custom', 6299.00);
 
 DROP TABLE IF EXISTS accessories;
 
@@ -25,6 +28,9 @@ CREATE TABLE accessories (
 INSERT INTO accessories (brand, type, price) VALUES
   ('Dunlop', 'strap', 24.99),
   ('Gibson', 'strings', 12.99),
+  ('Fender', 'strings', 11.99),
+  ('Dunlop', 'strap', 14.99),
+  ('Dunlop', 'microfibre wipe', 4.99),
   ('Martin', 'strings', 7.49);
 
 DROP TABLE IF EXISTS users;
