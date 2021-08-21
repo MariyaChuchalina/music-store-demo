@@ -1,4 +1,4 @@
-package com.example.musicstoredemo.model;
+package com.example.musicstoredemo.model.catalog;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,12 +20,9 @@ public class Guitar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
     private String brand;
-
     private String type;
-
     private String model;
-
     private double price;
+
 }

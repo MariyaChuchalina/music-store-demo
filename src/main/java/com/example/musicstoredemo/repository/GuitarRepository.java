@@ -1,6 +1,6 @@
 package com.example.musicstoredemo.repository;
 
-import com.example.musicstoredemo.model.Guitar;
+import com.example.musicstoredemo.model.catalog.Guitar;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

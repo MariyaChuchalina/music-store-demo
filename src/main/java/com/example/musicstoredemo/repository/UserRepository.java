@@ -1,9 +1,9 @@
 package com.example.musicstoredemo.repository;
 
-import com.example.musicstoredemo.model.catalog.Accessory;
+import com.example.musicstoredemo.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AccessoryRepository extends JpaRepository<Accessory, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 }

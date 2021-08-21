@@ -1,10 +1,10 @@
 package com.example.musicstoredemo.service;
 
 import com.example.musicstoredemo.exception.ItemNotFoundException;
-import com.example.musicstoredemo.model.Accessory;
-import com.example.musicstoredemo.model.Guitar;
+import com.example.musicstoredemo.model.catalog.Accessory;
 import com.example.musicstoredemo.model.catalog.Caretaker;
 import com.example.musicstoredemo.model.catalog.Catalog;
+import com.example.musicstoredemo.model.catalog.Guitar;
 import com.example.musicstoredemo.model.price.Currency;
 import com.example.musicstoredemo.model.price.Price;
 import com.example.musicstoredemo.model.price.PriceAdapter;
@@ -32,6 +32,7 @@ public class MusicStoreService {
     private Catalog catalog;
     private Caretaker caretaker;
 
+    List<Guitar> guitarsWithUpdatedPrices;
     private Price priceAdapter;
     private PriceInEuros priceInEuros;
 
@@ -40,6 +41,7 @@ public class MusicStoreService {
         catalog = Catalog.getInstance();
         caretaker = new Caretaker();
         populateCatalog();
+        guitarsWithUpdatedPrices = new ArrayList<Guitar>();
     }
 
     public List<Guitar> getGuitarCatalog(Currency currency) {
@@ -78,11 +80,12 @@ public class MusicStoreService {
     }
 
     public void revertCatalog() {
+        log.info("[<-] Reverting catalogue to it\'s previous state...");
         caretaker.revert(catalog);
     }
 
     private List<Guitar> convertPrices(Currency currency){
-        List<Guitar> guitarsWithUpdatedPrices = new ArrayList<Guitar>();
+        guitarsWithUpdatedPrices.clear();
 
         if(!catalog.getGuitarList().isEmpty()) {
             catalog.getGuitarList().forEach(g -> {
@@ -102,7 +105,7 @@ public class MusicStoreService {
     }
 
     private void refreshCatalog() {
-        log.info("Saving current version and refreshing catalog...");
+        log.info("[->] Saving current version and refreshing catalog...");
         caretaker.save(catalog);
         populateCatalog();
     }

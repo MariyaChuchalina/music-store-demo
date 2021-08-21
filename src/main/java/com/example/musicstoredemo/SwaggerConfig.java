@@ -1,7 +1,7 @@
 package com.example.musicstoredemo;
 
-import com.example.musicstoredemo.model.Accessory;
-import com.example.musicstoredemo.model.Guitar;
+import com.example.musicstoredemo.model.catalog.Accessory;
+import com.example.musicstoredemo.model.catalog.Guitar;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.PathSelectors;
@@ -23,4 +23,5 @@ public class SwaggerConfig {
                 .build()
                 .ignoredParameterTypes(Accessory.class, Guitar.class);
     }
+
 }

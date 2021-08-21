@@ -23,3 +23,18 @@ CREATE TABLE accessories (
 INSERT INTO accessories (brand) VALUES
   ('Dunlop'),
   ('Martin');
+
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  first_name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50) NOT NULL,
+  role VARCHAR(50) NOT NULL,
+  access_token VARCHAR(50) NOT NULL
+);
+
+INSERT INTO users (first_name, last_name, role, access_token) VALUES
+  ('Anna', 'Smith', 'client', 'clientaccesstoken'),
+  ('Frederic', 'Hudson', 'admin', 'adminaccesstoken'),
+  ('Unknown', 'Person', '', 'aaa');

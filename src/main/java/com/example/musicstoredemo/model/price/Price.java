@@ -5,4 +5,5 @@ public interface Price {
     double getPriceInDollars();
 
     double getPriceInPounds();
+
 }

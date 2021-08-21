@@ -23,4 +23,5 @@ public class PriceAdapter implements Price {
                 .setScale(2, RoundingMode.HALF_UP)
                 .doubleValue();
     }
+
 }
