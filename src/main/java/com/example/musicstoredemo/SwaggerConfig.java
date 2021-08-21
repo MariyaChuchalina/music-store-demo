@@ -1,7 +1,7 @@
 package com.example.musicstoredemo;
 
-import com.example.musicstoredemo.model.catalog.Accessory;
-import com.example.musicstoredemo.model.catalog.Guitar;
+import com.example.musicstoredemo.model.catalog.items.Accessory;
+import com.example.musicstoredemo.model.catalog.items.Guitar;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.PathSelectors;

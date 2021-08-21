@@ -1,10 +1,10 @@
 package com.example.musicstoredemo.service;
 
 import com.example.musicstoredemo.exception.ItemNotFoundException;
-import com.example.musicstoredemo.model.catalog.Accessory;
+import com.example.musicstoredemo.model.catalog.items.Accessory;
 import com.example.musicstoredemo.model.catalog.Caretaker;
 import com.example.musicstoredemo.model.catalog.Catalog;
-import com.example.musicstoredemo.model.catalog.Guitar;
+import com.example.musicstoredemo.model.catalog.items.Guitar;
 import com.example.musicstoredemo.model.price.Currency;
 import com.example.musicstoredemo.model.price.Price;
 import com.example.musicstoredemo.model.price.PriceAdapter;
@@ -33,6 +33,7 @@ public class MusicStoreService {
     private Caretaker caretaker;
 
     List<Guitar> guitarsWithUpdatedPrices;
+    List<Accessory> accessoriesWithUpdatedPrices;
     private Price priceAdapter;
     private PriceInEuros priceInEuros;
 
@@ -42,27 +43,73 @@ public class MusicStoreService {
         caretaker = new Caretaker();
         populateCatalog();
         guitarsWithUpdatedPrices = new ArrayList<Guitar>();
+        accessoriesWithUpdatedPrices = new ArrayList<Accessory>();
     }
 
-    public List<Guitar> getGuitarCatalog(Currency currency) {
-        return currency == Currency.euro ? catalog.getGuitarList()
-                                         : convertPrices(currency);
+    public List<Guitar> getGuitarCatalog(String currency) {
+        return Currency.parse(currency) == Currency.EURO ? catalog.getGuitarList()
+                                                         : convertGuitarPrices(currency);
     }
 
-    public List<Accessory> getAccessoriesCatalog() {
-        return catalog.getAccessoryList();
+    public List<Accessory> getAccessoriesCatalog(String currency) {
+        return Currency.parse(currency) == Currency.EURO ? catalog.getAccessoryList()
+                                                         : convertAccessoryPrices(currency);
     }
 
-    public Guitar getGuitarById(long id) {
-        return catalog.getGuitarList().stream()
-                .filter(g -> g.getId() == id).findFirst()
-                .orElseThrow(() -> new ItemNotFoundException(String.format("No guitar with id: %s found", id)));
+    public Guitar getGuitarById(long id, String currency) {
+        Guitar guitar = catalog.getGuitarList().stream()
+                        .filter(g -> g.getId() == id).findFirst()
+                        .orElseThrow(() -> new ItemNotFoundException(String.format("No guitar with id: %s found", id)));
+
+        Guitar guitarToReturn = new Guitar(guitar.getId(), guitar.getBrand(), guitar.getType(), guitar.getModel(), guitar.getPrice());
+
+        if (Currency.parse(currency) != Currency.EURO) {
+            priceInEuros = new PriceInEuros(guitarToReturn.getPrice());
+            priceAdapter = new PriceAdapter(priceInEuros);
+        }
+
+        switch(Currency.parse(currency)){
+            case DOLLAR:{
+                guitarToReturn.setPrice(priceAdapter.getPriceInDollars());
+                break;
+            }
+            case POUND:{
+                guitarToReturn.setPrice(priceAdapter.getPriceInPounds());
+                break;
+            }
+            default:
+                break;
+        }
+
+        return guitarToReturn;
     }
 
-    public Accessory getAccessoryById(long id) {
-        return catalog.getAccessoryList().stream()
-                .filter(a -> a.getId() == id).findFirst()
-                .orElseThrow(() -> new ItemNotFoundException(String.format("No accessory with id: %s found", id)));
+    public Accessory getAccessoryById(long id, String currency) {
+        Accessory accessory = catalog.getAccessoryList().stream()
+                              .filter(a -> a.getId() == id).findFirst()
+                              .orElseThrow(() -> new ItemNotFoundException(String.format("No accessory with id: %s found", id)));
+
+        Accessory accessoryToReturn = new Accessory(accessory.getId(), accessory.getBrand(), accessory.getType(), accessory.getPrice());
+
+        if (Currency.parse(currency) != Currency.EURO) {
+            priceInEuros = new PriceInEuros(accessoryToReturn.getPrice());
+            priceAdapter = new PriceAdapter(priceInEuros);
+        }
+
+        switch(Currency.parse(currency)){
+            case DOLLAR:{
+                accessoryToReturn.setPrice(priceAdapter.getPriceInDollars());
+                break;
+            }
+            case POUND:{
+                accessoryToReturn.setPrice(priceAdapter.getPriceInPounds());
+                break;
+            }
+            default:
+                break;
+        }
+
+        return accessoryToReturn;
     }
 
     public void addGuitar(Guitar guitar) {
@@ -84,7 +131,7 @@ public class MusicStoreService {
         caretaker.revert(catalog);
     }
 
-    private List<Guitar> convertPrices(Currency currency){
+    private List<Guitar> convertGuitarPrices(String currency){
         guitarsWithUpdatedPrices.clear();
 
         if(!catalog.getGuitarList().isEmpty()) {
@@ -95,13 +142,32 @@ public class MusicStoreService {
                                                         g.getBrand(),
                                                         g.getType(),
                                                         g.getModel(),
-                                                        currency == Currency.dollar
-                                                                ? priceAdapter.getPriceInDollars()
-                                                                : priceAdapter.getPriceInPounds()));
+                                                        Currency.parse(currency) == Currency.DOLLAR
+                                                                                ? priceAdapter.getPriceInDollars()
+                                                                                : priceAdapter.getPriceInPounds()));
             });
         }
 
         return guitarsWithUpdatedPrices;
+    }
+
+    private List<Accessory> convertAccessoryPrices(String currency){
+        accessoriesWithUpdatedPrices.clear();
+
+        if(!catalog.getAccessoryList().isEmpty()) {
+            catalog.getAccessoryList().forEach(a -> {
+                priceInEuros = new PriceInEuros(a.getPrice());
+                priceAdapter = new PriceAdapter(priceInEuros);
+                accessoriesWithUpdatedPrices.add(new Accessory(a.getId(),
+                                                               a.getBrand(),
+                                                               a.getType(),
+                                                               Currency.parse(currency) == Currency.DOLLAR
+                                                                                        ? priceAdapter.getPriceInDollars()
+                                                                                        : priceAdapter.getPriceInPounds()));
+            });
+        }
+
+        return accessoriesWithUpdatedPrices;
     }
 
     private void refreshCatalog() {

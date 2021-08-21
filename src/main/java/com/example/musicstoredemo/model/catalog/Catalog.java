@@ -1,5 +1,7 @@
 package com.example.musicstoredemo.model.catalog;
 
+import com.example.musicstoredemo.model.catalog.items.Accessory;
+import com.example.musicstoredemo.model.catalog.items.Guitar;
 import lombok.Getter;
 import lombok.Setter;
 

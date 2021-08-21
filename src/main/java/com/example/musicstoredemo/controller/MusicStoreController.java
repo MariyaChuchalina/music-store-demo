@@ -1,9 +1,8 @@
 package com.example.musicstoredemo.controller;
 
 import com.example.musicstoredemo.model.access.Endpoint;
-import com.example.musicstoredemo.model.catalog.Accessory;
-import com.example.musicstoredemo.model.catalog.Guitar;
-import com.example.musicstoredemo.model.price.Currency;
+import com.example.musicstoredemo.model.catalog.items.Accessory;
+import com.example.musicstoredemo.model.catalog.items.Guitar;
 import com.example.musicstoredemo.service.MusicStoreService;
 import com.example.musicstoredemo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,48 +30,51 @@ public class MusicStoreController {
     private UserService userService;
 
     @GetMapping("/guitars")
-    public List<Guitar> getGuitarCatalog(@RequestParam(value = "currency", defaultValue = "euro") Currency currency,
+    public List<Guitar> getGuitarCatalog(@RequestParam(value = "currency", defaultValue = "euro") String currency,
                                          @RequestHeader(value = ACCESS_HEADER) String accessHeader) {
         userService.validateAccess(accessHeader, Endpoint.GET_GUITAR_CATALOGUE);
         return musicStoreService.getGuitarCatalog(currency);
     }
 
     @GetMapping("/accessories")
-    public List<Accessory> getAccessoriesCatalog(@RequestHeader(value = ACCESS_HEADER) String accessHeader) {
+    public List<Accessory> getAccessoriesCatalog(@RequestParam(value = "currency", defaultValue = "euro") String currency,
+                                                 @RequestHeader(value = ACCESS_HEADER) String accessHeader) {
         userService.validateAccess(accessHeader, Endpoint.GET_ACCESSORIES_CATALOGUE);
-        return musicStoreService.getAccessoriesCatalog();
+        return musicStoreService.getAccessoriesCatalog(currency);
     }
 
     @GetMapping("/guitar")
     public Guitar getGuitarById(@RequestParam @NotBlank long id,
+                                @RequestParam(value = "currency", defaultValue = "euro") String currency,
                                 @RequestHeader(value = ACCESS_HEADER) String accessHeader) {
         userService.validateAccess(accessHeader, Endpoint.GET_GUITAR_BY_ID);
-        return musicStoreService.getGuitarById(id);
+        return musicStoreService.getGuitarById(id, currency);
     }
 
     @GetMapping("/accessory")
     public Accessory getAccessoryById(@RequestParam @NotBlank long id,
+                                      @RequestParam(value = "currency", defaultValue = "euro") String currency,
                                       @RequestHeader(value = ACCESS_HEADER) String accessHeader) {
         userService.validateAccess(accessHeader, Endpoint.GET_ACCESSORY_BY_ID);
-        return musicStoreService.getAccessoryById(id);
+        return musicStoreService.getAccessoryById(id, currency);
     }
 
     @PostMapping("/revert")
-    public void revertCatalog(@RequestHeader(value = ACCESS_HEADER) String accessHeader) throws IllegalAccessException {
+    public void revertCatalog(@RequestHeader(value = ACCESS_HEADER) String accessHeader) {
         userService.validateAccess(accessHeader, Endpoint.POST_REVERT_CATALOGUE);
         musicStoreService.revertCatalog();
     }
 
     @PostMapping("/guitar")
     public void addGuitar(@RequestBody Guitar guitar,
-                          @RequestHeader(value = ACCESS_HEADER) String accessHeader) throws IllegalAccessException {
+                          @RequestHeader(value = ACCESS_HEADER) String accessHeader) {
         userService.validateAccess(accessHeader, Endpoint.POST_ADD_GUITAR);
         musicStoreService.addGuitar(guitar);
     }
 
     @PostMapping("/accessory")
     public void addAccessory(@RequestBody Accessory accessory,
-                             @RequestHeader(value = ACCESS_HEADER) String accessHeader) throws IllegalAccessException {
+                             @RequestHeader(value = ACCESS_HEADER) String accessHeader) {
         userService.validateAccess(accessHeader, Endpoint.POST_ADD_ACCESSORY);
         musicStoreService.addAccessory(accessory);
     }

@@ -1,4 +1,4 @@
-package com.example.musicstoredemo.model.catalog;
+package com.example.musicstoredemo.model.catalog.items;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -10,19 +10,22 @@ CREATE TABLE guitars (
 
 INSERT INTO guitars (brand, type, model, price) VALUES
   ('Gibson', 'acoustic', 'J-45', 2479.00),
-  ('Fender', 'hybrid', 'T-Bucket', 250.00),
-  ('Schecter', 'electic', 'Apocalypse V1', 1100.99);
+  ('Fender', 'electric-acoustic', 'T-Bucket', 250.00),
+  ('Schecter', 'electric', 'Apocalypse V1', 1100.99);
 
 DROP TABLE IF EXISTS accessories;
 
 CREATE TABLE accessories (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  brand VARCHAR(50) NOT NULL
+  brand VARCHAR(50) NOT NULL,
+  type VARCHAR(50) NOT NULL,
+  price DECIMAL(7,2) NOT NULL
 );
 
-INSERT INTO accessories (brand) VALUES
-  ('Dunlop'),
-  ('Martin');
+INSERT INTO accessories (brand, type, price) VALUES
+  ('Dunlop', 'strap', 24.99),
+  ('Gibson', 'strings', 12.99),
+  ('Martin', 'strings', 7.49);
 
 DROP TABLE IF EXISTS users;
 

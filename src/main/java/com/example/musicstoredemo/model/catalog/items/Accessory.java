@@ -1,4 +1,4 @@
-package com.example.musicstoredemo.model.catalog;
+package com.example.musicstoredemo.model.catalog.items;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,5 +21,7 @@ public class Accessory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String brand;
+    private String type;
+    private double price;
 
 }
