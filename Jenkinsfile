@@ -11,10 +11,15 @@ pipeline {
                 sh 'mvn clean install'
             }
         }
-        stage("Deploy") {
+        stage("Build Docker Image") {
             steps{
-                echo 'Deploying the application...'
-                sh 'docker build --build-arg artifactid=music-store-demo --build-arg version=0.0.1 -t mc/music-store-demo - < Dockerfile'
+                echo 'Building the Docker image...'
+                sh 'docker build --build-arg artifactid=music-store-demo --build-arg version=0.0.1 -t mc/music-store-demo .'
+            }
+        }
+        stage("Run Container") {
+            steps{
+                echo 'Running the container...'
                 sh 'docker run -ti -p 9000:5000 mc/music-store-demo'
             }
         }
