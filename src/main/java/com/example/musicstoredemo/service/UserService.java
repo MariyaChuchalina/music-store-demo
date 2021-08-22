@@ -27,7 +27,7 @@ public class UserService {
         validateInput(accessToken);
         User user = getUserByAccessToken(accessToken);
 
-        endpointAccess = new ProxyEndpointAccess(!user.getRole().isBlank() ? user.getRole() : UserRole.UNKNOWN.name());
+        endpointAccess = new ProxyEndpointAccess(user.getRole() == null ? user.getRole() : UserRole.UNKNOWN.name());
         endpointAccess.grantEndpointAccess(endpoint);
     }
 
