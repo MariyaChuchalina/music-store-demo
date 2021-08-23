@@ -297,7 +297,7 @@ public class MusicStoreServiceTest {
     public void testAddGuitar() {
         when(guitarRepositoryMock.findAll()).thenReturn(populateGuitarCatalog());
 
-        musicStoreService.addGuitar(new Guitar(4, "Gibson", "acoustic", "J-45", 2479.00));
+        musicStoreService.addGuitar(new Guitar(4, "Gibson", "acoustic", "J-45", 2420.00));
 
         verify(guitarRepositoryMock, times(2)).findAll();
         verify(guitarRepositoryMock, times(1)).save(any(Guitar.class));
@@ -308,7 +308,7 @@ public class MusicStoreServiceTest {
     public void testAddAccessory() {
         when(accessoryRepositoryMock.findAll()).thenReturn(populateAccessoriesCatalog());
 
-        musicStoreService.addAccessory(new Accessory(4, "Gibson", "strings", 12.99));
+        musicStoreService.addAccessory(new Accessory(4, "Gibson", "strings", 18.99));
 
         verify(accessoryRepositoryMock, times(2)).findAll();
         verify(accessoryRepositoryMock, times(1)).save(any(Accessory.class));
@@ -321,7 +321,7 @@ public class MusicStoreServiceTest {
 
         musicStoreService.addGuitar(new Guitar(1, "Gibson", "acoustic", "J-45", 2479.00));
 
-        verify(guitarRepositoryMock, times(1)).findAll();
+        verify(guitarRepositoryMock, times(2)).findAll();
         verify(guitarRepositoryMock, never()).save(any(Guitar.class));
     }
 
@@ -331,7 +331,7 @@ public class MusicStoreServiceTest {
 
         musicStoreService.addAccessory(new Accessory(1, "Gibson", "strings", 12.99));
 
-        verify(accessoryRepositoryMock, times(1)).findAll();
+        verify(accessoryRepositoryMock, times(2)).findAll();
         verify(accessoryRepositoryMock, never()).save(any(Accessory.class));
     }
 

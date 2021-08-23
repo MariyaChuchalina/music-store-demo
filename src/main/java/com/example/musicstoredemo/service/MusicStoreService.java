@@ -211,17 +211,24 @@ public class MusicStoreService {
     }
 
     public void addGuitar(Guitar guitar) {
-        if (!guitarRepository.findAll().contains(guitar)) {
+        if (!guitarRepository.findAll().stream().anyMatch(g ->
+                                                          g.getBrand().equalsIgnoreCase(guitar.getBrand()) &&
+                                                          g.getType().equalsIgnoreCase(guitar.getType()) &&
+                                                          g.getModel().equalsIgnoreCase(guitar.getModel()) &&
+                                                          (g.getPrice() == guitar.getPrice()))) {
             guitarRepository.save(guitar);
-            refreshCatalog();
         }
+            refreshCatalog();
     }
 
     public void addAccessory(Accessory accessory) {
-        if (!accessoryRepository.findAll().contains(accessory)) {
+        if (!accessoryRepository.findAll().stream().anyMatch(a ->
+                                                             a.getBrand().equalsIgnoreCase(accessory.getBrand()) &&
+                                                             a.getType().equalsIgnoreCase(accessory.getType()) &&
+                                                             (a.getPrice() == accessory.getPrice()))){
             accessoryRepository.save(accessory);
-            refreshCatalog();
         }
+            refreshCatalog();
     }
 
     public void revertCatalog() {
