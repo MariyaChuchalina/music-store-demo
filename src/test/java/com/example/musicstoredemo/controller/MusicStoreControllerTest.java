@@ -5,8 +5,8 @@ import com.example.musicstoredemo.model.catalog.items.Accessory;
 import com.example.musicstoredemo.model.catalog.items.Guitar;
 import com.example.musicstoredemo.service.MusicStoreService;
 import com.example.musicstoredemo.service.UserService;
-import jdk.nashorn.internal.ir.annotations.Ignore;
-import org.apache.commons.io.IOUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -16,25 +16,15 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -56,85 +46,108 @@ public class MusicStoreControllerTest {
     @MockBean
     private UserService userServiceMock;
 
+    ObjectMapper mapper;
+    ObjectWriter ow;
+
     @BeforeAll
     public void setUp() {
+        mapper = new ObjectMapper();
+        ow = mapper.writer().withDefaultPrettyPrinter();
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testGetGuitarCatalogSuccessfully() {
-        doNothing().when(userServiceMock).validateAccess(any(String.class), any(Endpoint.class));
-        when(musicStoreServiceMock.getGuitarCatalog(any(String.class), any(String.class)))
-                .thenReturn(new ArrayList<Guitar>(Collections.singletonList(new Guitar(1, "Gibson", "electric", "Les Paul Custom", 6299))));
-
-        List<Guitar> response = musicStoreServiceMock.getGuitarCatalog("euro", "none");
-        verify(musicStoreServiceMock, times(1)).getGuitarCatalog("euro", "none");
-        verifyGuitarCatalogResponse(response.get(0));
-    }
-
-    @Test
-    public void testGetAccessoryCatalogSuccessfully() {
-        doNothing().when(userServiceMock).validateAccess(any(String.class), any(Endpoint.class));
-        when(musicStoreServiceMock.getAccessoriesCatalog(any(String.class), any(String.class)))
-                .thenReturn(new ArrayList<Accessory>(Collections.singletonList(new Accessory(1, "Gibson", "strings", 12.99))));
-
-        List<Accessory> response = musicStoreServiceMock.getAccessoriesCatalog("euro", "none");
-        verify(musicStoreServiceMock, times(1)).getAccessoriesCatalog("euro", "none");
-        verifyAccessoryCatalogResponse(response.get(0));
-    }
-
-    @Test
-    public void testGetGuitarCatalogByBrandSuccessfully() {
-        doNothing().when(userServiceMock).validateAccess(any(String.class), any(Endpoint.class));
-        when(musicStoreServiceMock.getGuitarCatalogByBrand(any(String.class), any(String.class), any(String.class)))
-                .thenReturn(new ArrayList<Guitar>(Collections.singletonList(new Guitar(1, "Gibson", "electric", "Les Paul Custom", 6299))));
-
-        List<Guitar> response = musicStoreServiceMock.getGuitarCatalogByBrand("Gibson", "euro", "none");
-        verify(musicStoreServiceMock, times(1)).getGuitarCatalogByBrand("Gibson", "euro", "none");
-        verifyGuitarCatalogResponse(response.get(0));
-    }
-
-    @Test
-    public void testGetAccessoryCatalogByBrandSuccessfully() {
-        doNothing().when(userServiceMock).validateAccess(any(String.class), any(Endpoint.class));
-        when(musicStoreServiceMock.getAccessoriesCatalogByBrand(any(String.class), any(String.class), any(String.class)))
-                .thenReturn(new ArrayList<Accessory>(Collections.singletonList(new Accessory(1, "Gibson", "strings", 12.99))));
-
-        List<Accessory> response = musicStoreServiceMock.getAccessoriesCatalogByBrand("Gibson", "euro", "none");
-        verify(musicStoreServiceMock, times(1)).getAccessoriesCatalogByBrand("Gibson", "euro", "none");
-        verifyAccessoryCatalogResponse(response.get(0));
-    }
-
-    @Test
-    public void testGetGuitarByIdSuccessfully() {
-        doNothing().when(userServiceMock).validateAccess(any(String.class), any(Endpoint.class));
-        when(musicStoreServiceMock.getGuitarById(any(long.class), any(String.class)))
-                .thenReturn(new Guitar(1, "Gibson", "electric", "Les Paul Custom", 6299));
-
-        Guitar response = musicStoreServiceMock.getGuitarById(1, "Gibson");
-        verify(musicStoreServiceMock, times(1)).getGuitarById(1, "Gibson");
-        verifyGuitarCatalogResponse(response);
-    }
-
-    @Test
-    public void testGetAccessoryByIdSuccessfully() {
-        doNothing().when(userServiceMock).validateAccess(any(String.class), any(Endpoint.class));
-        when(musicStoreServiceMock.getAccessoryById(any(long.class), any(String.class)))
-                .thenReturn(new Accessory(1, "Gibson", "strings", 12.99));
-
-        Accessory response = musicStoreServiceMock.getAccessoryById(1, "Gibson");
-        verify(musicStoreServiceMock, times(1)).getAccessoryById(1, "Gibson");
-        verifyAccessoryCatalogResponse(response);
-    }
-
-    //@Test
-    public void testAddGuitar() throws Exception {
-        String content = getContentFromFile("request/guitar.json");
-        doNothing().when(userServiceMock).validateAccess(any(String.class), any(Endpoint.class));
-        mockMvc.perform(post("/catalog/guitar").content(content))
+    public void testGetGuitarCatalogSuccessfully() throws Exception {
+        mockMvc.perform(get("/catalog/guitars")
+                .header("access-token", "clientaccesstoken"))
                 .andExpect(status().isOk());
 
+        verify(musicStoreServiceMock, times(1)).getGuitarCatalog("euro", "none");
+        verify(userServiceMock, times(1)).validateAccess("clientaccesstoken", Endpoint.GET_GUITAR_CATALOGUE);
+    }
+
+    @Test
+    public void testGetAccessoryCatalogSuccessfully() throws Exception {
+        mockMvc.perform(get("/catalog/accessories")
+                .header("access-token", "clientaccesstoken"))
+                .andExpect(status().isOk());
+
+        verify(musicStoreServiceMock, times(1)).getAccessoriesCatalog("euro", "none");
+        verify(userServiceMock, times(1)).validateAccess("clientaccesstoken", Endpoint.GET_ACCESSORIES_CATALOGUE);
+    }
+
+    @Test
+    public void testGetGuitarCatalogByBrandSuccessfully() throws Exception {
+        mockMvc.perform(get("/catalog/guitars/gibson")
+                .header("access-token", "clientaccesstoken"))
+                .andExpect(status().isOk());
+
+        verify(musicStoreServiceMock, times(1)).getGuitarCatalogByBrand("gibson", "euro", "none");
+        verify(userServiceMock, times(1)).validateAccess("clientaccesstoken", Endpoint.GET_GUITAR_CATALOGUE_BY_BRAND);
+    }
+
+    @Test
+    public void testGetAccessoryCatalogByBrandSuccessfully() throws Exception {
+        mockMvc.perform(get("/catalog/accessories/gibson")
+                .header("access-token", "clientaccesstoken"))
+                .andExpect(status().isOk());
+
+        verify(musicStoreServiceMock, times(1)).getAccessoriesCatalogByBrand("gibson", "euro", "none");
+        verify(userServiceMock, times(1)).validateAccess("clientaccesstoken", Endpoint.GET_ACCESSORIES_CATALOGUE_BY_BRAND);
+    }
+
+    @Test
+    public void testGetGuitarByIdSuccessfully() throws Exception {
+        mockMvc.perform(get("/catalog/guitar")
+                .param("id", "1")
+                .header("access-token", "clientaccesstoken"))
+                .andExpect(status().isOk());
+
+        verify(musicStoreServiceMock, times(1)).getGuitarById(1, "euro");
+        verify(userServiceMock, times(1)).validateAccess("clientaccesstoken", Endpoint.GET_GUITAR_BY_ID);
+    }
+
+    @Test
+    public void testGetAccessoryByIdSuccessfully() throws Exception {
+        mockMvc.perform(get("/catalog/accessory")
+                .param("id", "1")
+                .header("access-token", "clientaccesstoken"))
+                .andExpect(status().isOk());
+
+        verify(musicStoreServiceMock, times(1)).getAccessoryById(1, "euro");
+        verify(userServiceMock, times(1)).validateAccess("clientaccesstoken", Endpoint.GET_ACCESSORY_BY_ID);
+    }
+
+    @Test
+    public void testRevertCatalog() throws Exception {
+        mockMvc.perform(post("/catalog/revert")
+                .header("access-token", "adminaccesstoken"))
+                .andExpect(status().isOk());
+
+        verify(userServiceMock, times(1)).validateAccess("adminaccesstoken", Endpoint.POST_REVERT_CATALOGUE);
+        verify(musicStoreServiceMock, times(1)).revertCatalog();
+    }
+
+    @Test
+    public void testAddGuitar() throws Exception {
+        mockMvc.perform(post("/catalog/guitar").contentType(APPLICATION_JSON_VALUE)
+                .content(ow.writeValueAsString(new Guitar(1, "Gibson", "electric", "Les Paul Custom", 6299)))
+                .header("access-token", "adminaccesstoken"))
+                .andExpect(status().isOk());
+
+        verify(userServiceMock, times(1)).validateAccess("adminaccesstoken", Endpoint.POST_ADD_GUITAR);
         verify(musicStoreServiceMock, times(1)).addGuitar(new Guitar(1, "Gibson", "electric", "Les Paul Custom", 6299));
+    }
+
+    @Test
+    public void testAddAccessory() throws Exception {
+        mockMvc.perform(post("/catalog/accessory").contentType(APPLICATION_JSON_VALUE)
+                .content(ow.writeValueAsString(new Accessory(1, "Gibson", "strings", 12.99)))
+                .header("access-token", "adminaccesstoken"))
+                .andExpect(status().isOk());
+
+        verify(userServiceMock, times(1)).validateAccess("adminaccesstoken", Endpoint.POST_ADD_ACCESSORY);
+        verify(musicStoreServiceMock, times(1)).addAccessory(new Accessory(1, "Gibson", "strings", 12.99));
     }
 
     @Test
@@ -163,6 +176,75 @@ public class MusicStoreControllerTest {
         verifyNoInteractions(userServiceMock);
     }
 
+    @Test
+    public void testGetGuitarByIdWithMissingHeader() throws Exception {
+        String response = mockMvc.perform(get("/catalog/guitar")
+                .param("id", "1"))
+                .andExpect(status().is4xxClientError())
+                .andReturn()
+                .getResolvedException()
+                .getMessage();
+
+        assertTrue(response.contains("Required request header 'access-token' for method parameter type String is not present"));
+        verifyNoInteractions(musicStoreServiceMock);
+        verifyNoInteractions(userServiceMock);
+    }
+
+    @Test
+    public void testGetAccessoryByIdWithMissingHeader() throws Exception {
+        String response = mockMvc.perform(get("/catalog/accessory")
+                .param("id", "1"))
+                .andExpect(status().is4xxClientError())
+                .andReturn()
+                .getResolvedException()
+                .getMessage();
+
+        assertTrue(response.contains("Required request header 'access-token' for method parameter type String is not present"));
+        verifyNoInteractions(musicStoreServiceMock);
+        verifyNoInteractions(userServiceMock);
+    }
+
+    @Test
+    public void testRevertCatalogWithMissingHeader() throws Exception {
+        String response = mockMvc.perform(post("/catalog/revert"))
+                .andExpect(status().is4xxClientError())
+                .andReturn()
+                .getResolvedException()
+                .getMessage();
+
+        assertTrue(response.contains("Required request header 'access-token' for method parameter type String is not present"));
+        verifyNoInteractions(musicStoreServiceMock);
+        verifyNoInteractions(userServiceMock);
+    }
+
+    @Test
+    public void testAddGuitarWithMissingHeader() throws Exception {
+        String response = mockMvc.perform(post("/catalog/guitar").contentType(APPLICATION_JSON_VALUE)
+                .content(ow.writeValueAsString(new Guitar(1, "Gibson", "electric", "Les Paul Custom", 6299))))
+                .andExpect(status().is4xxClientError())
+                .andReturn()
+                .getResolvedException()
+                .getMessage();
+
+        assertTrue(response.contains("Required request header 'access-token' for method parameter type String is not present"));
+        verifyNoInteractions(musicStoreServiceMock);
+        verifyNoInteractions(userServiceMock);
+    }
+
+    @Test
+    public void testAddAccessoryWithMissingHeader() throws Exception {
+        String response = mockMvc.perform(post("/catalog/accessory").contentType(APPLICATION_JSON_VALUE)
+                .content(ow.writeValueAsString(new Accessory(1, "Gibson", "strings", 12.99))))
+                .andExpect(status().is4xxClientError())
+                .andReturn()
+                .getResolvedException()
+                .getMessage();
+
+        assertTrue(response.contains("Required request header 'access-token' for method parameter type String is not present"));
+        verifyNoInteractions(musicStoreServiceMock);
+        verifyNoInteractions(userServiceMock);
+    }
+
     private void verifyGuitarCatalogResponse(Guitar guitar) {
         assertEquals(1, guitar.getId());
         assertEquals("Gibson", guitar.getBrand());
@@ -176,15 +258,6 @@ public class MusicStoreControllerTest {
         assertEquals("Gibson", accessory.getBrand());
         assertEquals("strings", accessory.getType());
         assertEquals(12.99, accessory.getPrice());
-    }
-
-    private String getContentFromFile(String path) {
-        try{
-            InputStream stream = new ClassPathResource(path).getInputStream();
-            return IOUtils.toString(stream, Charset.defaultCharset());
-        } catch (IOException e){
-            throw new RuntimeException("Could not read test file path");
-        }
     }
 
 }
